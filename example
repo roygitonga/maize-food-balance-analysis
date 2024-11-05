@@ -1,0 +1,44 @@
+# Sample Food Balance Sheet Analysis for Maize
+
+# Load necessary library
+library(dplyr)
+
+# Sample data for maize balance sheet
+# Hypothetical values for each year (in metric tons) and population (in millions)
+data <- data.frame(
+  year = 2020:2024,
+  production = c(50000, 52000, 54000, 55000, 56000),
+  imports = c(10000, 12000, 11000, 13000, 14000),
+  exports = c(5000, 4000, 4500, 4800, 4600),
+  stocks_opening = c(2000, 3000, 3500, 4000, 4500),
+  stocks_closing = c(3000, 3500, 4000, 4500, 5000),
+  population = c(50, 52, 53, 54, 55) # Population in millions
+)
+
+# Calculate Food Balance components
+data <- data %>%
+  mutate(
+    # Total availability calculation
+    total_availability = production + imports - exports + stocks_opening - stocks_closing,
+    
+    # Per capita availability calculation (kg per person)
+    per_capita_availability = (total_availability * 1000) / (population * 1e6),
+    
+    # Calculate per capita consumption by adjusting for waste & other losses
+    per_capita_consumption = per_capita_availability * 0.9 # Assume 10% losses for simplicity
+  )
+
+# Display the results
+print(data)
+
+# Plot per capita availability and consumption over time
+library(ggplot2)
+
+ggplot(data, aes(x = year)) +
+  geom_line(aes(y = per_capita_availability, color = "Availability (kg/person)")) +
+  geom_line(aes(y = per_capita_consumption, color = "Consumption (kg/person)")) +
+  labs(title = "Maize Food Balance Sheet Analysis",
+       x = "Year",
+       y = "Per Capita (kg/person)",
+       color = "Metric") +
+  theme_minimal()
